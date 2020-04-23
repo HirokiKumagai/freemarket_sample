@@ -15,7 +15,7 @@ class UsersController < ApplicationController
     if cards.length == 0
       @card_error_message = "カードが登録されていません。" 
     else
-      Payjp.api_key = ENV["PAYJP_PRIVATE_KEY"]
+      Payjp.api_key = Rails.application.credentials[:payjp][:secret_key]
       @default_cards_information = []
       cards.each_with_index do |card, i|
         customer = Payjp::Customer.retrieve(card.customer_id)
