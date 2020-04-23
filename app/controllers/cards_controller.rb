@@ -7,7 +7,7 @@ class CardsController < ApplicationController
     if cards.length == 0
       @card_error_message = "カードが登録されていません。"
     else
-      Payjp.api_key = Rails.application.credentials["payjp"]["secret_key"]
+      Payjp.api_key = Rails.application.credentials[:payjp][:secret_key]
       @default_cards_information = []
       cards.each_with_index do |card, i|
         customer = Payjp::Customer.retrieve(card.customer_id)
@@ -17,7 +17,7 @@ class CardsController < ApplicationController
   end
 
   def create
-    Payjp.api_key = Rails.application.credentials["payjp"]["secret_key"]
+    Payjp.api_key = Rails.application.credentials[:payjp][:secret_key]
     if params['payjp-token'].blank?
       redirect_to new_card_path
     else
