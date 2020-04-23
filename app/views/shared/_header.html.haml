@@ -1,0 +1,54 @@
+.header
+  .header__title
+    = link_to root_path, class: :header__title__logo do
+      = image_tag "/images/logo/logo.png", alt: "Furima_Logo"
+    .header__title__search_bar
+      = search_form_for @search, url: search_items_path do |f|
+        = f.text_field :search_text, placeholder: "キーワードから探す", value: @text, type: "text", class: :header__title__search_bar__text
+        = button_tag type: "submit", class: :header__title__search_bar__image do
+          = image_tag '/images/icon/icon-search 1.png'
+    .header__title__search_result
+  .header__menu
+    %label{id:"category-label"}
+      %p{id:"category"}
+        カテゴリー
+      %ul.category-list
+        %li.category-list__parents
+          %ul.category-list__parents__box
+            - @parents.each_with_index do |parent, i|
+              %li.parent-box{id: "parent-#{i}"}
+                = parent.name
+        %li.category-list__children
+          %ul.category-list__children__box
+            - @parents.each_with_index do |parent, i|
+              .children-box{id: "child__parent-#{i}"}
+                - @parents[i].children.each_with_index do |child, num|
+                  %li.child-box{id: "parent-#{i}__child-#{num}"}
+                    = child.name
+        %li.category-list__grandchildren
+          %ul.category-list__grandchildren__box
+            - @parents.each_with_index do |parent, i|
+              .grandchildren-boxs{id:"grandchilds-#{i}"}
+                -@parents[i].children.each_with_index do |child, num|
+                  .grandchildren-box{id: "grandchild__parent-#{i}__child-#{num}"}
+                    -child.children.each do |grandchild|
+                      %li.grandchild-box{id:"btn-#{grandchild.id}"}
+                        = search_form_for @search, url: search_items_path, class: "category-search_form", id: "search__btn-#{grandchild.id}" do |f|
+                          = f.hidden_field :category_id_eq_any, value: grandchild.id, name: "q[category_id_eq_any][]"
+                        = grandchild.name
+    %ul.header__menu__menu-list
+      - if user_signed_in?
+        %li
+          = link_to edit_user_path(:id), class: "header__menu__menu_list--my_page" do
+            マイページ
+        %li
+          = link_to destroy_user_session_path, method: :delete, class: "header__menu__menu_list--logout" do
+            ログアウト
+      - else
+        %li
+          = link_to new_user_session_path, class: "header__menu__menu_list--login" do
+            ログイン
+        %li
+          = link_to new_user_registration_path, class: "header__menu__menu_list--registration" do
+            新規会員登録
+  .header__breadclumbs

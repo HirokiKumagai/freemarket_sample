@@ -1,0 +1,152 @@
+= render "shared/header"
+= render "shared/item_btn"
+    
+.main
+  .main__show
+
+    - breadcrumb :item_show, @item.id
+    = render "shared/breadcrumbs"
+
+    .main__show__top
+      .main__show__top__item_box
+        - if user_signed_in? && current_user.id == @item.user_id
+          %ul
+            %li
+              =link_to "編集", edit_item_path(id: @item.id)
+            %li
+              =link_to "削除", item_path(id: @item.id), method: :delete
+        - else
+          .favorite
+            - if user_signed_in? 
+              - if @like.present?
+                =link_to item_like_path(@item.id), method: :delete, class: "favorite-btn-b" do
+                  = icon 'fas', 'star'
+                  
+                %p いいね。済み
+              - else
+                =link_to item_likes_path(@item.id), method: :post, class: "favorite-btn-a" do
+                  = icon 'fas', 'star' 
+      %h1.main__show__top__item_box__name 
+        = @item.name
+      .main__show__top__item_box__body
+        .first_image
+          = image_tag @first_image.photo.url
+          -if @item.status == 1
+            = render "shared/sold_out"
+        .image_a
+          - @images.each do |image|
+            .image_b
+              = image_tag image.photo.url
+        
+      .main__show__top__item_box__price
+        %span 
+        = "#{@item.price}円"
+        .main__show__top__item_box__price__detail
+          %span（税込）
+          %span（送料込み）
+      .main__show__top__item_box__detail 
+        = @item.name
+      %table.table_item
+        %tr.record
+          %th.table_header 出品者
+          %td 
+            = @user.nickname
+        %tr.record
+          %th.table_header カテゴリー
+          %td 
+            = @parent.name
+            >
+            = @child.name
+            >
+            = @grandchild.name
+        %tr.record
+          %th.table_header 商品の状態
+          %td 
+            = @item.condition
+        %tr.record  
+          %th.table_header 配送料の負担
+          %td
+            = @item.delivery_fee
+        %tr.record
+          %th.table_header 発送元の地域
+          %td 
+            = @prefecture.name
+        %tr.record
+          %th.table_header 発送日の目安
+          %td 
+            = @item.delivery_time
+ 
+    .main__show__purchase
+ 
+      - if user_signed_in? && current_user.id != @item.user_id
+        -if @item.status == 0 
+          = link_to "購入する", new_item_order_path(params[:id])
+    
+    .message-wraper
+      .messages-box
+        -@comments.each do |comment|
+          -if user_signed_in? && current_user.id == comment.user_id
+            -if @item.user_id == comment.user_id
+              .message-box-current-user
+                .message-box-current-user__left
+                  .message-box-current-user__left__nickname
+                    = comment.user.nickname
+                    (出品者)
+                  .message-box-current-user__left__comment
+                    = comment.text
+                .message-box-current-user__right
+                  -if comment.user.profile.present?
+                    = image_tag comment.user.profile.image.url ,class:"message-current-user-icon"
+                  -else
+                    .def-icon
+                      = icon 'fas', 'frown-open', class: "icon"
+            -else
+              .message-box-current-user
+                .message-box-current-user__left
+                  .message-box-current-user__left__nickname
+                    = comment.user.nickname
+                  .message-box-current-user__left__comment
+                    = comment.text
+                .message-box-current-user__right
+                  -if comment.user.profile.present?
+                    = image_tag comment.user.profile.image.url ,class:"message-current-user-icon"
+                  -else
+                    .def-icon
+                      = icon 'fas', 'frown-open', class: "icon"
+          -else
+            -if @item.user_id == comment.user_id
+              .message-box
+                .message-box__left
+                  -if comment.user.profile.present?
+                    = image_tag comment.user.profile.image.url ,class:"message-user-icon"
+                  -else
+                    .def-icon
+                      = icon 'fas', 'frown-open', class: "icon"
+                .message-box__right
+                  .message-box__right__nickname
+                    = comment.user.nickname
+                    (出品者)
+                  .message-box__right__comment
+                    = comment.text
+            -else
+              .message-box
+                .message-box__left
+                  -if comment.user.profile.present?
+                    = image_tag comment.user.profile.image.url ,class:"message-user-icon"
+                  -else
+                    .def-icon
+                      = icon 'fas', 'frown-open', class: "icon"
+                .message-box__right
+                  .message-box__right__nickname
+                    = comment.user.nickname
+                  .message-box__right__comment
+                    = comment.text
+      - if user_signed_in? 
+        = form_with model: [@item, @comment],url: item_comments_path(@item.id),method: :post, local:true do |f| 
+          .item-comment-form
+            .message-user-name
+              =f.text_area :text, class:"show-message-form" 
+              %br
+              .message-submit__details
+              = f.submit "コメントする", class:"show-comment-button" 
+= render "shared/footer"
