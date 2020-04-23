@@ -38,7 +38,7 @@ class OrdersController < ApplicationController
       @item = Item.find(@order.item_id)
       @image = @item.images.first
       if @order.save && @item.status == 0
-        Payjp.api_key = ENV['PAYJP_PRIVATE_KEY']
+        Payjp.api_key = Rails.application.credentials[:payjp][:secret_key]
         Payjp::Charge.create(
         amount: @item.price,
         customer: card.customer_id, 
