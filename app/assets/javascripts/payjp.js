@@ -1,6 +1,6 @@
 $(function() {
   if ($("#token_submit") != null) {
-    Payjp.setPublicKey("pk_test_af1eb980f3f0ac3fe3baddd7");
+    Payjp.setPublicKey("pk_test_a881b1e5556a9db65fb978f0");
     $("#token_submit").on("click", function(e) {
       e.preventDefault();
       let item_id = $('#item_id').val();
